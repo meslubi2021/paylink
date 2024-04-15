@@ -264,6 +264,11 @@ namespace Essensoft.Paylink.WeChatPay.V3
         /// </remarks>
         private static void EncryptPrivacyProperty(WeChatPayObject obj, RSA rsa)
         {
+            if(obj == null)
+            {
+                return;
+            }
+
             foreach (var propertyInfo in obj.GetType().GetProperties())
             {
                 if (propertyInfo.PropertyType == typeof(string)) // 加密字符串
@@ -326,6 +331,11 @@ namespace Essensoft.Paylink.WeChatPay.V3
         /// </remarks>
         private static void DecryptPrivacyProperty(WeChatPayObject obj, RSA rsa)
         {
+            if(obj == null)
+            {
+                return;
+            }
+
             foreach (var propertyInfo in obj.GetType().GetProperties())
             {
                 if (propertyInfo.PropertyType == typeof(string)) // 加密字符串
