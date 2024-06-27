@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text.Json;
+using System.Threading.Tasks;
 using Essensoft.Paylink.WeChatPay;
 using Essensoft.Paylink.WeChatPay.V3;
 using Essensoft.Paylink.WeChatPay.V3.Notify;
@@ -176,5 +177,37 @@ namespace WebApplicationSample.Controllers
         }
 
         #endregion
+
+        /// <summary>
+        /// 商家转账到零钱
+        /// </summary>
+        [Route("transfer")]
+        [HttpPost]
+        public async Task<IActionResult> Transfer()
+        {
+            try
+            {
+                var notify = await _client.ExecuteAsync<WeChatPayTransferBatchesFinishedNotify>(Request, _optionsAccessor.Value);
+                switch (notify.NotifyCiphertext.EventType)
+                {
+                    case "MCHTRANSFER.BATCH.FINISHED":
+                        {
+                            return WeChatPayNotifyResult.Success;
+                        }
+                    case "MCHTRANSFER.BATCH.CLOSED":
+                        {
+                            var closedNotify = JsonSerializer.Deserialize<WeChatPayTransferBatchesClosedNotify>(notify.ResourcePlaintext);
+                            return WeChatPayNotifyResult.Success;
+                        }
+                }
+
+                return WeChatPayNotifyResult.Failure;
+            }
+            catch (WeChatPayException ex)
+            {
+                _logger.LogWarning("出现异常: " + ex.Message);
+                return WeChatPayNotifyResult.Failure;
+            }
+        }
     }
 }
