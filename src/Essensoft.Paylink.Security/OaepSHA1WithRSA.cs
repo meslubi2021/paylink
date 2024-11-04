@@ -43,35 +43,5 @@ namespace Essensoft.Paylink.Security
                 return Encoding.UTF8.GetString(rsa.Decrypt(Convert.FromBase64String(data), RSAEncryptionPadding.OaepSHA1));
             }
         }
-
-        public static string Encrypt(RSA rsa, string data)
-        {
-            if (rsa == null)
-            {
-                throw new ArgumentNullException(nameof(rsa));
-            }
-
-            if (string.IsNullOrEmpty(data))
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            return Convert.ToBase64String(rsa.Encrypt(Encoding.UTF8.GetBytes(data), RSAEncryptionPadding.OaepSHA1));
-        }
-
-        public static string Decrypt(RSA rsa, string data)
-        {
-            if (rsa == null)
-            {
-                throw new ArgumentNullException(nameof(rsa));
-            }
-
-            if (string.IsNullOrEmpty(data))
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            return Encoding.UTF8.GetString(rsa.Decrypt(Convert.FromBase64String(data), RSAEncryptionPadding.OaepSHA1));
-        }
     }
 }

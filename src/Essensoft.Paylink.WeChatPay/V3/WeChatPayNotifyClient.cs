@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Essensoft.Paylink.Security;
@@ -115,12 +114,31 @@ namespace Essensoft.Paylink.WeChatPay.V3
                 throw new WeChatPayException("sign check fail: body is empty!");
             }
 
-            var cert = await _platformCertificateManager.GetCertificateAsync(_client, options, headers.Serial);
-            var signSourceData = WeChatPayUtility.BuildSignatureSourceData(headers.Timestamp, headers.Nonce, body);
-            var signCheck = SHA256WithRSA.Verify(cert.Certificate.GetRSAPublicKey(), signSourceData, headers.Signature);
-            if (!signCheck)
+            if(headers.Serial.StartsWith("PUB_KEY_ID_")) // 微信支付公钥
             {
-                throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
+                if (!string.IsNullOrEmpty(options.WeChatPayPublicKeyId) && headers.Serial == options.WeChatPayPublicKeyId)
+                {
+                    var signSourceData = WeChatPayUtility.BuildSignatureSourceData(headers.Timestamp, headers.Nonce, body);
+                    var signCheck = SHA256WithRSA.Verify(options.WeChatPayPublicKey, signSourceData, headers.Signature);
+                    if (!signCheck)
+                    {
+                        throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
+                    }
+                }
+                else
+                {
+                    throw new WeChatPayException("sign check fail: WeChatPay Public Key Id Fail!");
+                }
+            }
+            else
+            {
+                var cert = await _platformCertificateManager.GetCertificateAsync(_client, options, headers.Serial);
+                var signSourceData = WeChatPayUtility.BuildSignatureSourceData(headers.Timestamp, headers.Nonce, body);
+                var signCheck = SHA256WithRSA.Verify(signSourceData, headers.Signature, cert.PublicKey);
+                if (!signCheck)
+                {
+                    throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
+                }
             }
         }
 

@@ -44,13 +44,16 @@ namespace Essensoft.Paylink.WeChatPay.V3
                                 {
                                     var certStr = AEAD_AES_256_GCM.Decrypt(certificate.EncryptCertificate.Nonce, certificate.EncryptCertificate.Ciphertext, certificate.EncryptCertificate.AssociatedData, options.APIv3Key);
 
+                                    var x509cert = new X509Certificate2(Encoding.ASCII.GetBytes(certStr), string.Empty, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+
                                     var cert = new WeChatPayPlatformCertificate
                                     {
                                         MchId = options.MchId,
                                         SerialNo = certificate.SerialNo,
                                         EffectiveTime = DateTime.Parse(certificate.EffectiveTime),
                                         ExpireTime = DateTime.Parse(certificate.ExpireTime),
-                                        Certificate = new X509Certificate2(Encoding.ASCII.GetBytes(certStr), string.Empty, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable)
+                                        Certificate = x509cert,
+                                        PublicKey = Convert.ToBase64String(x509cert.GetRSAPublicKey().ExportSubjectPublicKeyInfo())
                                     };
 
                                     _certs.TryAdd(certificate.SerialNo, cert);
