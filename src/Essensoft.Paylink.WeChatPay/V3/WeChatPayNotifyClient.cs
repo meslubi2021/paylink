@@ -119,7 +119,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                 if (!string.IsNullOrEmpty(options.WeChatPayPublicKeyId) && headers.Serial == options.WeChatPayPublicKeyId)
                 {
                     var signSourceData = WeChatPayUtility.BuildSignatureSourceData(headers.Timestamp, headers.Nonce, body);
-                    var signCheck = SHA256WithRSA.Verify(options.WeChatPayPublicKey, signSourceData, headers.Signature);
+                    var signCheck = SHA256WithRSA.Verify(signSourceData, headers.Signature, options.WeChatPayPublicKey);
                     if (!signCheck)
                     {
                         throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
