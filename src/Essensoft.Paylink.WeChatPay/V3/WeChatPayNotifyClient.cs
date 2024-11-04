@@ -114,7 +114,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                 throw new WeChatPayException("sign check fail: body is empty!");
             }
 
-            if(headers.Serial.StartsWith("PUB_KEY_ID_")) // 微信支付公钥
+            if(headers.Serial.StartsWith(WeChatPayConsts.WeChatPayPublicKeyIdPrefix)) // 微信支付公钥
             {
                 if (!string.IsNullOrEmpty(options.WeChatPayPublicKeyId) && headers.Serial == options.WeChatPayPublicKeyId)
                 {
