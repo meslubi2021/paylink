@@ -136,11 +136,19 @@ namespace Essensoft.Paylink.WeChatPay
             {
                 if (File.Exists(Certificate))
                 {
+#if NET9_0_OR_GREATER
+                    Certificate2 = X509CertificateLoader.LoadPkcs12FromFile(Certificate, CertificatePassword, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.Exportable);
+#else
                     Certificate2 = new X509Certificate2(Certificate, CertificatePassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+#endif
                 }
                 else
                 {
+#if NET9_0_OR_GREATER
+                    Certificate2 = X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(Certificate), CertificatePassword, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.Exportable);
+#else
                     Certificate2 = new X509Certificate2(Convert.FromBase64String(Certificate), CertificatePassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+#endif
                 }
 
                 CertificateSerialNo = Certificate2.GetSerialNumberString();

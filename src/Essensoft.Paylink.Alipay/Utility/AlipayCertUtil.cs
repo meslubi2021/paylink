@@ -64,15 +64,27 @@ namespace Essensoft.Paylink.Alipay.Utility
             {
                 if (File.Exists(certificate))
                 {
+#if NET9_0_OR_GREATER
+                    return X509CertificateLoader.LoadCertificateFromFile(certificate);
+#else
                     return new X509Certificate2(certificate);
+#endif
                 }
                 else if (Base64Util.IsBase64String(certificate))
                 {
+#if NET9_0_OR_GREATER
+                    return X509CertificateLoader.LoadCertificate(Convert.FromBase64String(certificate));
+#else
                     return new X509Certificate2(Convert.FromBase64String(certificate));
+#endif
                 }
                 else
                 {
+#if NET9_0_OR_GREATER
+                    return X509CertificateLoader.LoadCertificate(Encoding.ASCII.GetBytes(certificate));
+#else
                     return new X509Certificate2(Encoding.ASCII.GetBytes(certificate));
+#endif
                 }
             }
             catch (CryptographicException ex)
