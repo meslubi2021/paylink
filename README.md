@@ -41,7 +41,7 @@ Package  | NuGet | Downloads | TargetFrameworks
 [net6.0-Y-image]: https://img.shields.io/badge/net6.0-Y-brightgreen.svg?style=flat-square
 [net7.0-Y-image]: https://img.shields.io/badge/net7.0-Y-brightgreen.svg?style=flat-square
 [net8.0-Y-image]: https://img.shields.io/badge/net8.0-Y-brightgreen.svg?style=flat-square
-[net9.0-Y-image]: https://img.shields.io/badge/net8.0-Y-brightgreen.svg?style=flat-square
+[net9.0-Y-image]: https://img.shields.io/badge/net9.0-Y-brightgreen.svg?style=flat-square
 
 ## 开发环境
 
