@@ -44,7 +44,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                                 {
                                     var certStr = AEAD_AES_256_GCM.Decrypt(certificate.EncryptCertificate.Nonce, certificate.EncryptCertificate.Ciphertext, certificate.EncryptCertificate.AssociatedData, options.APIv3Key);
 #if NET9_0_OR_GREATER
-                                    var x509cert = X509CertificateLoader.LoadPkcs12(Encoding.UTF8.GetBytes(certStr), string.Empty, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.Exportable);
+                                    var x509cert = X509CertificateLoader.LoadCertificate(Encoding.UTF8.GetBytes(certStr));
 #else
                                     var x509cert = new X509Certificate2(Encoding.UTF8.GetBytes(certStr), string.Empty, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
 #endif
@@ -114,7 +114,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                                 {
                                     var certStr = AEAD_AES_256_GCM.Decrypt(certificate.EncryptCertificate.Nonce, certificate.EncryptCertificate.Ciphertext, certificate.EncryptCertificate.AssociatedData, options.APIv3Key);
 #if NET9_0_OR_GREATER
-                                    var x509cert = X509CertificateLoader.LoadPkcs12(Encoding.UTF8.GetBytes(certStr), string.Empty, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.Exportable);
+                                    var x509cert = X509CertificateLoader.LoadCertificate(Encoding.UTF8.GetBytes(certStr));
 #else
                                     var x509cert = new X509Certificate2(Encoding.UTF8.GetBytes(certStr), string.Empty, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
 #endif
