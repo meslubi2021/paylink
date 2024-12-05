@@ -20,7 +20,7 @@ namespace Essensoft.Paylink.Security
 
             using (var rsa = RSA.Create())
             {
-                rsa.ImportRSAPublicKey(Convert.FromBase64String(publicKey), out var _);
+                rsa.ImportSubjectPublicKeyInfo(Convert.FromBase64String(publicKey), out var _);
                 return Convert.ToBase64String(rsa.Encrypt(Encoding.UTF8.GetBytes(data), RSAEncryptionPadding.OaepSHA1));
             }
         }
