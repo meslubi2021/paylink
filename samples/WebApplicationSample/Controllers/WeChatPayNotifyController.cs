@@ -13,9 +13,9 @@ namespace WebApplicationSample.Controllers
     {
         private readonly ILogger<WeChatPayNotifyController> _logger;
         private readonly IWeChatPayNotifyClient _client;
-        private readonly IOptions<WeChatPayOptions> _optionsAccessor;
+        private readonly IOptions<PaylinkOptions> _optionsAccessor;
 
-        public WeChatPayNotifyController(ILogger<WeChatPayNotifyController> logger, IWeChatPayNotifyClient client, IOptions<WeChatPayOptions> optionsAccessor)
+        public WeChatPayNotifyController(ILogger<WeChatPayNotifyController> logger, IWeChatPayNotifyClient client, IOptions<PaylinkOptions> optionsAccessor)
         {
             _logger = logger;
             _client = client;
@@ -31,7 +31,7 @@ namespace WebApplicationSample.Controllers
         {
             try
             {
-                var notify = await _client.ExecuteAsync<WeChatPayUnifiedOrderNotify>(Request, _optionsAccessor.Value);
+                var notify = await _client.ExecuteAsync<WeChatPayUnifiedOrderNotify>(Request, _optionsAccessor.Value.WeChatPay);
                 if (notify.ReturnCode == WeChatPayCode.Success)
                 {
                     if (notify.ResultCode == WeChatPayCode.Success)
@@ -59,7 +59,7 @@ namespace WebApplicationSample.Controllers
         {
             try
             {
-                var notify = await _client.ExecuteAsync<WeChatPayRefundNotify>(Request, _optionsAccessor.Value);
+                var notify = await _client.ExecuteAsync<WeChatPayRefundNotify>(Request, _optionsAccessor.Value.WeChatPay);
                 if (notify.ReturnCode == WeChatPayCode.Success)
                 {
                     if (notify.RefundStatus == WeChatPayRefundStatus.Success)

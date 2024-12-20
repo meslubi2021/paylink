@@ -14,9 +14,9 @@ namespace WebApplicationSample.Controllers
     {
         private readonly ILogger<AlipayController> _logger;
         private readonly IAlipayClient _client;
-        private readonly IOptions<AlipayOptions> _optionsAccessor;
+        private readonly IOptions<PaylinkOptions> _optionsAccessor;
 
-        public AlipayController(ILogger<AlipayController> logger, IAlipayClient client, IOptions<AlipayOptions> optionsAccessor)
+        public AlipayController(ILogger<AlipayController> logger, IAlipayClient client, IOptions<PaylinkOptions> optionsAccessor)
         {
             _logger = logger;
             _client = client;
@@ -58,7 +58,7 @@ namespace WebApplicationSample.Controllers
             req.SetBizModel(model);
             req.SetNotifyUrl(viewModel.NotifyUrl);
 
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             if (!response.IsError)
             {
                 ViewData["qrcode"] = response.QrCode;
@@ -95,7 +95,7 @@ namespace WebApplicationSample.Controllers
             var req = new AlipayTradePayRequest();
             req.SetBizModel(model);
 
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -127,7 +127,7 @@ namespace WebApplicationSample.Controllers
             req.SetBizModel(model);
             req.SetNotifyUrl(viewModel.NotifyUrl);
 
-            var response = await _client.SdkExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.SdkExecuteAsync(req, _optionsAccessor.Value.Alipay);
             // 将response.Body给 ios、android端，由其去完成调起支付宝APP。
             // 客户端 Android 集成流程: https://opendocs.alipay.com/open/204/105296/
             // 客户端 iOS 集成流程: https://opendocs.alipay.com/open/204/105295/
@@ -164,7 +164,7 @@ namespace WebApplicationSample.Controllers
             req.SetNotifyUrl(viewModel.NotifyUrl);
             req.SetReturnUrl(viewModel.ReturnUrl);
 
-            var response = await _client.PageExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.PageExecuteAsync(req, _optionsAccessor.Value.Alipay);
             return Content(response.Body, "text/html", Encoding.UTF8);
         }
 
@@ -196,7 +196,7 @@ namespace WebApplicationSample.Controllers
             req.SetNotifyUrl(viewMode.NotifyUrl);
             req.SetReturnUrl(viewMode.ReturnUrl);
 
-            var response = await _client.PageExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.PageExecuteAsync(req, _optionsAccessor.Value.Alipay);
             return Content(response.Body, "text/html", Encoding.UTF8);
         }
 
@@ -224,7 +224,7 @@ namespace WebApplicationSample.Controllers
             var req = new AlipayTradeQueryRequest();
             req.SetBizModel(model);
 
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = ((AlipayResponse)response).Body;
             return View();
         }
@@ -256,7 +256,7 @@ namespace WebApplicationSample.Controllers
             var req = new AlipayTradeRefundRequest();
             req.SetBizModel(model);
 
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -286,7 +286,7 @@ namespace WebApplicationSample.Controllers
             var req = new AlipayTradeFastpayRefundQueryRequest();
             req.SetBizModel(model);
 
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -316,7 +316,7 @@ namespace WebApplicationSample.Controllers
             req.SetBizModel(model);
             req.SetNotifyUrl(viewMode.NotifyUrl);
 
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -347,7 +347,7 @@ namespace WebApplicationSample.Controllers
             };
             var req = new AlipayFundTransUniTransferRequest();
             req.SetBizModel(model);
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -375,7 +375,7 @@ namespace WebApplicationSample.Controllers
 
             var req = new AlipayFundTransCommonQueryRequest();
             req.SetBizModel(model);
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -403,7 +403,7 @@ namespace WebApplicationSample.Controllers
 
             var req = new AlipayFundAccountQueryRequest();
             req.SetBizModel(model);
-            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value);
+            var response = await _client.CertificateExecuteAsync(req, _optionsAccessor.Value.Alipay);
             ViewData["response"] = response.Body;
             return View();
         }
