@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Essensoft.Paylink.WeChatPay.V2.Response;
 
 namespace Essensoft.Paylink.WeChatPay.V2.Request

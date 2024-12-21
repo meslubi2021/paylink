@@ -101,11 +101,7 @@ namespace Essensoft.Paylink.Alipay.Utility
         {
             if (content == null && fileInfo != null && fileInfo.Exists)
             {
-                using (var fileStream = fileInfo.OpenRead())
-                {
-                    content = new byte[fileStream.Length];
-                    fileStream.Read(content, 0, content.Length);
-                }
+                content = File.ReadAllBytes(fileInfo.FullName);
             }
 
             return content;

@@ -9,11 +9,10 @@ namespace Essensoft.Paylink.WeChatPay.V3.Domain;
 public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
 {
     /// <summary>
-    /// 直连商户的appid
+    /// 商户appid
     /// </summary>
     /// <remarks>
     /// 申请商户号的appid或商户号绑定的appid（企业号corpid即为此appid）
-    /// <para>示例值：wxf636efh567hg4356</para>
     /// </remarks>
     [JsonPropertyName("appid")]
     public string AppId { get; set; }
@@ -23,7 +22,6 @@ public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
     /// </summary>
     /// <remarks>
     /// 商户系统内部的商家批次单号，要求此参数只能由数字、大小写字母组成，在商户系统内部唯一
-    /// <para>示例值：plfk2020042013</para>
     /// </remarks>
     [JsonPropertyName("out_batch_no")]
     public string OutBatchNo { get; set; }
@@ -33,7 +31,6 @@ public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
     /// </summary>
     /// <remarks>
     /// 该笔批量转账的名称
-    /// <para>示例值：2019年1月深圳分部报销单</para>
     /// </remarks>
     [JsonPropertyName("batch_name")]
     public string BatchName { get; set; }
@@ -43,7 +40,6 @@ public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
     /// </summary>
     /// <remarks>
     /// 转账说明，UTF8编码，最多允许32个字符
-    /// <para>示例值：2019年1月深圳分部报销单</para>
     /// </remarks>
     [JsonPropertyName("batch_remark")]
     public string BatchRemark { get; set; }
@@ -53,7 +49,6 @@ public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
     /// </summary>
     /// <remarks>
     /// 转账金额单位为“分”。转账总金额必须与批次内所有明细转账金额之和保持一致，否则无法发起转账操作
-    /// <para>示例值：4000000</para>
     /// </remarks>
     [JsonPropertyName("total_amount")]
     public int TotalAmount { get; set; }
@@ -63,7 +58,6 @@ public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
     /// </summary>
     /// <remarks>
     /// 一个转账批次单最多发起一千笔转账。转账总笔数必须与批次内所有明细之和保持一致，否则无法发起转账操作
-    /// <para>示例值：200</para>
     /// </remarks>
     [JsonPropertyName("total_num")]
     public int TotalNum { get; set; }
@@ -77,7 +71,6 @@ public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
     [JsonPropertyName("transfer_detail_list")]
     public List<TransferDetail> TransferDetailList { get; set; }
 
-
     /// <summary>
     /// 转账场景ID
     /// </summary>
@@ -87,4 +80,13 @@ public class WeChatPayTransferBatchesBodyModel : WeChatPayObject
     /// </remarks>
     [JsonPropertyName("transfer_scene_id")]
     public string TransferSceneId { get; set; }
+
+    /// <summary>
+    /// 通知地址
+    /// </summary>
+    /// <remarks>
+    /// 异步接收微信支付结果通知的回调地址，通知url必须为公网可访问的url，必须为https，不能携带参数。
+    /// </remarks>
+    [JsonPropertyName("notify_url")]
+    public string NotifyUrl { get; set; }
 }

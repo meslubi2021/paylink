@@ -13,7 +13,6 @@ namespace Essensoft.Paylink.WeChatPay
         private string mchId;
         private string certificate;
         private string certificatePassword;
-        private string privateKey;
 
         /// <summary>
         /// 应用号
@@ -105,27 +104,6 @@ namespace Essensoft.Paylink.WeChatPay
         }
 
         /// <summary>
-        /// 商户API私钥
-        /// </summary>
-        /// <remarks>
-        /// 当配置了P12格式证书时，已包含私钥信息，不必再配置API私钥。PEM格式则必须配置。
-        /// </remarks>
-        public string APIPrivateKey
-        {
-            get => privateKey;
-            set
-            {
-                if (!string.IsNullOrEmpty(value))
-                {
-                    privateKey = value;
-                    var rsa = RSA.Create();
-                    rsa.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out var _);
-                    RSAPrivateKey = rsa;
-                }
-            }
-        }
-
-        /// <summary>
         /// 商户API密钥
         /// </summary>
         public string APIKey { get; set; }
@@ -144,7 +122,7 @@ namespace Essensoft.Paylink.WeChatPay
         public string RsaPublicKey { get; set; }
 
         internal X509Certificate2 Certificate2;
-        internal RSA RSAPrivateKey;
+        internal string RSAPrivateKey;
         internal string CertificateSerialNo;
 
         private void GetCertificateInfo()
@@ -158,24 +136,42 @@ namespace Essensoft.Paylink.WeChatPay
             {
                 if (File.Exists(Certificate))
                 {
+#if NET9_0_OR_GREATER
+                    Certificate2 = X509CertificateLoader.LoadPkcs12FromFile(Certificate, CertificatePassword, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.Exportable);
+#else
                     Certificate2 = new X509Certificate2(Certificate, CertificatePassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+#endif
                 }
                 else
                 {
+#if NET9_0_OR_GREATER
+                    Certificate2 = X509CertificateLoader.LoadPkcs12(Convert.FromBase64String(Certificate), CertificatePassword, X509KeyStorageFlags.DefaultKeySet | X509KeyStorageFlags.Exportable);
+#else
                     Certificate2 = new X509Certificate2(Convert.FromBase64String(Certificate), CertificatePassword, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
+#endif
+                }
+
+                CertificateSerialNo = Certificate2.GetSerialNumberString();
+                var rsaPrivateKey = Certificate2.GetRSAPrivateKey();
+                if (rsaPrivateKey != null)
+                {
+                    RSAPrivateKey = Convert.ToBase64String(rsaPrivateKey.ExportRSAPrivateKey());
                 }
             }
             catch (CryptographicException ex)
             {
                 throw new WeChatPayException($"反序列化证书失败，请确认是否为微信支付签发的有效PKCS#12格式证书。原始异常信息：{ex.Message}");
             }
-
-            CertificateSerialNo = Certificate2.GetSerialNumberString();
-
-            if (RSAPrivateKey == null)
-            {
-                RSAPrivateKey = Certificate2.GetRSAPrivateKey();
-            }
         }
+
+        /// <summary>
+        /// 微信支付公钥Id
+        /// </summary>
+        public string WeChatPayPublicKeyId { get; set; }
+
+        /// <summary>
+        /// 微信支付公钥
+        /// </summary>
+        public string WeChatPayPublicKey { get; set; }
     }
 }

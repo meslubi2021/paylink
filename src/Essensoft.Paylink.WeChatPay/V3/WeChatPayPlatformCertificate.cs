@@ -28,6 +28,11 @@ namespace Essensoft.Paylink.WeChatPay.V3
         /// <summary>
         /// 证书
         /// </summary>
-        public X509Certificate2 Certificate;
+        public X509Certificate2 Certificate { get; set; }
+
+        /// <summary>
+        /// 公钥
+        /// </summary>
+        public string PublicKey { get; set; }
     }
 }

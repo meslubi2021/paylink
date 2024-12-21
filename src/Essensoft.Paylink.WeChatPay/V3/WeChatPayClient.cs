@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Essensoft.Paylink.Security;
 using Essensoft.Paylink.WeChatPay.V3.Extensions;
@@ -161,13 +159,25 @@ namespace Essensoft.Paylink.WeChatPay.V3
                 throw new WeChatPayException($"options.{nameof(WeChatPayOptions.APIv3Key)} is Empty!");
             }
 
-            var cert = await _platformCertificateManager.GetCertificateAsync(this, options);
+            string certSerialNo, certPublicKey;
+
+            if (string.IsNullOrEmpty(options.WeChatPayPublicKeyId) || string.IsNullOrEmpty(options.WeChatPayPublicKey))
+            {
+                var cert = await _platformCertificateManager.GetCertificateAsync(this, options);
+                certSerialNo = cert.SerialNo;
+                certPublicKey = cert.PublicKey;
+            }
+            else
+            {
+                certSerialNo = options.WeChatPayPublicKeyId;
+                certPublicKey = options.WeChatPayPublicKey;
+            }
 
             // 加密敏感信息
-            EncryptPrivacyProperty(request.GetQueryModel(), cert.Certificate.GetRSAPublicKey());
+            EncryptPrivacyProperty(request.GetQueryModel(), certPublicKey);
 
             var client = _httpClientFactory.CreateClient(Name);
-            var (headers, body, statusCode) = await client.GetAsync(request, options, cert.SerialNo);
+            var (headers, body, statusCode) = await client.GetAsync(request, options, certSerialNo);
             var parser = new WeChatPayResponseJsonParser<T>();
             var response = parser.Parse(body, statusCode);
 
@@ -206,13 +216,25 @@ namespace Essensoft.Paylink.WeChatPay.V3
                 throw new WeChatPayException($"options.{nameof(WeChatPayOptions.Certificate)} is Empty!");
             }
 
-            var cert = await _platformCertificateManager.GetCertificateAsync(this, options);
+            string certSerialNo, certPublicKey;
+
+            if (string.IsNullOrEmpty(options.WeChatPayPublicKeyId) || string.IsNullOrEmpty(options.WeChatPayPublicKey))
+            {
+                var cert = await _platformCertificateManager.GetCertificateAsync(this, options);
+                certSerialNo = cert.SerialNo;
+                certPublicKey = cert.PublicKey;
+            }
+            else
+            {
+                certSerialNo = options.WeChatPayPublicKeyId;
+                certPublicKey = options.WeChatPayPublicKey;
+            }
 
             // 加密敏感信息
-            EncryptPrivacyProperty(request.GetBodyModel(), cert.Certificate.GetRSAPublicKey());
+            EncryptPrivacyProperty(request.GetBodyModel(), certPublicKey);
 
             var client = _httpClientFactory.CreateClient(Name);
-            var (headers, body, statusCode) = await client.PostAsync(request, options, cert.SerialNo);
+            var (headers, body, statusCode) = await client.PostAsync(request, options, certSerialNo);
             var parser = new WeChatPayResponseJsonParser<T>();
             var response = parser.Parse(body, statusCode);
 
@@ -243,12 +265,31 @@ namespace Essensoft.Paylink.WeChatPay.V3
                 throw new WeChatPayException($"sign check fail: {nameof(headers.Signature)} is empty!");
             }
 
-            var cert = await _platformCertificateManager.GetCertificateAsync(this, options, headers.Serial);
-            var signSourceData = WeChatPayUtility.BuildSignatureSourceData(headers.Timestamp, headers.Nonce, body);
-            var signCheck = SHA256WithRSA.Verify(cert.Certificate.GetRSAPublicKey(), signSourceData, headers.Signature);
-            if (!signCheck)
+            if (headers.Serial.StartsWith(WeChatPayConsts.WeChatPayPublicKeyIdPrefix)) // 微信支付公钥
             {
-                throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
+                if (!string.IsNullOrEmpty(options.WeChatPayPublicKeyId) && headers.Serial == options.WeChatPayPublicKeyId)
+                {
+                    var signSourceData = WeChatPayUtility.BuildSignatureSourceData(headers.Timestamp, headers.Nonce, body);
+                    var signCheck = SHA256WithRSA.Verify(signSourceData, headers.Signature, options.WeChatPayPublicKey);
+                    if (!signCheck)
+                    {
+                        throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
+                    }
+                }
+                else
+                {
+                    throw new WeChatPayException("sign check fail: WeChatPay Public Key Id Fail!");
+                }
+            }
+            else
+            {
+                var cert = await _platformCertificateManager.GetCertificateAsync(this, options, headers.Serial);
+                var signSourceData = WeChatPayUtility.BuildSignatureSourceData(headers.Timestamp, headers.Nonce, body);
+                var signCheck = SHA256WithRSA.Verify(signSourceData, headers.Signature, cert.PublicKey);
+                if (!signCheck)
+                {
+                    throw new WeChatPayException("sign check fail: check Sign and Data Fail!");
+                }
             }
         }
 
@@ -262,8 +303,13 @@ namespace Essensoft.Paylink.WeChatPay.V3
         /// <remarks>
         /// <para><a href="https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_3.shtml">敏感信息加解密</a></para>
         /// </remarks>
-        private static void EncryptPrivacyProperty(WeChatPayObject obj, RSA rsa)
+        private static void EncryptPrivacyProperty(WeChatPayObject obj, string publicKey)
         {
+            if(obj == null)
+            {
+                return;
+            }
+
             foreach (var propertyInfo in obj.GetType().GetProperties())
             {
                 if (propertyInfo.PropertyType == typeof(string)) // 加密字符串
@@ -282,7 +328,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                     }
 
                     // 加密并将密文设置回对象
-                    var ciphertext = OaepSHA1WithRSA.Encrypt(rsa, strValue);
+                    var ciphertext = OaepSHA1WithRSA.Encrypt(strValue, publicKey);
                     propertyInfo.SetValue(obj, ciphertext);
                 }
                 else if (propertyInfo.PropertyType.IsClass) // 加密子对象
@@ -293,7 +339,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                         {
                             foreach (var item in array)
                             {
-                                EncryptPrivacyProperty(item, rsa);
+                                EncryptPrivacyProperty(item, publicKey);
                             }
                         }
                     }
@@ -303,7 +349,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                         {
                             foreach (var item in enumerable)
                             {
-                                EncryptPrivacyProperty(item, rsa);
+                                EncryptPrivacyProperty(item, publicKey);
                             }
                         }
                     }
@@ -311,7 +357,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                     {
                         if (propertyInfo.GetValue(obj) is WeChatPayObject wcpObj)
                         {
-                            EncryptPrivacyProperty(wcpObj, rsa);
+                            EncryptPrivacyProperty(wcpObj, publicKey);
                         }
                     }
                 }
@@ -324,8 +370,13 @@ namespace Essensoft.Paylink.WeChatPay.V3
         /// <remarks>
         /// <para><a href="https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_3.shtml">敏感信息加解密</a></para>
         /// </remarks>
-        private static void DecryptPrivacyProperty(WeChatPayObject obj, RSA rsa)
+        private static void DecryptPrivacyProperty(WeChatPayObject obj, string privateKey)
         {
+            if(obj == null)
+            {
+                return;
+            }
+
             foreach (var propertyInfo in obj.GetType().GetProperties())
             {
                 if (propertyInfo.PropertyType == typeof(string)) // 加密字符串
@@ -344,7 +395,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                     }
 
                     // 解密并将明文设置回对象
-                    var ciphertext = OaepSHA1WithRSA.Decrypt(rsa, strValue);
+                    var ciphertext = OaepSHA1WithRSA.Decrypt(strValue, privateKey);
                     propertyInfo.SetValue(obj, ciphertext);
                 }
                 else if (propertyInfo.PropertyType.IsClass) // 解密子对象
@@ -355,7 +406,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                         {
                             foreach (var item in array)
                             {
-                                DecryptPrivacyProperty(item, rsa);
+                                DecryptPrivacyProperty(item, privateKey);
                             }
                         }
                     }
@@ -365,7 +416,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                         {
                             foreach (var item in enumerable)
                             {
-                                DecryptPrivacyProperty(item, rsa);
+                                DecryptPrivacyProperty(item, privateKey);
                             }
                         }
                     }
@@ -373,7 +424,7 @@ namespace Essensoft.Paylink.WeChatPay.V3
                     {
                         if (propertyInfo.GetValue(obj) is WeChatPayObject wcpObj)
                         {
-                            DecryptPrivacyProperty(wcpObj, rsa);
+                            DecryptPrivacyProperty(wcpObj, privateKey);
                         }
                     }
                 }

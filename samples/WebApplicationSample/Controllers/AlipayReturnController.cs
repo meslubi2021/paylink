@@ -12,9 +12,9 @@ namespace WebApplicationSample.Controllers
     {
         private readonly ILogger<AlipayReturnController> _logger;
         private readonly IAlipayNotifyClient _client;
-        private readonly IOptions<AlipayOptions> _optionsAccessor;
+        private readonly IOptions<PaylinkOptions> _optionsAccessor;
 
-        public AlipayReturnController(ILogger<AlipayReturnController> logger, IAlipayNotifyClient client, IOptions<AlipayOptions> optionsAccessor)
+        public AlipayReturnController(ILogger<AlipayReturnController> logger, IAlipayNotifyClient client, IOptions<PaylinkOptions> optionsAccessor)
         {
             _logger = logger;
             _client = client;
@@ -30,7 +30,7 @@ namespace WebApplicationSample.Controllers
         {
             try
             {
-                var notify = await _client.ExecuteAsync<AlipayTradePagePayReturn>(Request, _optionsAccessor.Value);
+                var notify = await _client.ExecuteAsync<AlipayTradePagePayReturn>(Request, _optionsAccessor.Value.Alipay);
                 ViewData["response"] = "支付成功";
                 return View();
             }
@@ -51,7 +51,7 @@ namespace WebApplicationSample.Controllers
         {
             try
             {
-                var notify = await _client.ExecuteAsync<AlipayTradeWapPayReturn>(Request, _optionsAccessor.Value);
+                var notify = await _client.ExecuteAsync<AlipayTradeWapPayReturn>(Request, _optionsAccessor.Value.Alipay);
                 ViewData["response"] = "支付成功";
                 return View();
             }

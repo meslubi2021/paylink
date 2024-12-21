@@ -41,5 +41,7 @@
         public const string Wechatpay_Timestamp = "Wechatpay-Timestamp";
         public const string Wechatpay_Nonce = "Wechatpay-Nonce";
         public const string Wechatpay_Signature = "Wechatpay-Signature";
+
+        public const string WeChatPayPublicKeyIdPrefix = "PUB_KEY_ID_";
     }
 }

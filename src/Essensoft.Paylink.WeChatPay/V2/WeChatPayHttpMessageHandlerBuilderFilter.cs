@@ -24,9 +24,14 @@ namespace Essensoft.Paylink.WeChatPay.V2
             {
                 next(builder);
 
-                if (builder.PrimaryHandler is HttpClientHandler handler)
+                if (builder.Name.Contains(WeChatPayClient.Prefix))
                 {
-                    if (builder.Name.Contains(WeChatPayClient.Prefix))
+                    if (builder.PrimaryHandler is not HttpClientHandler)
+                    {
+                        builder.PrimaryHandler = new HttpClientHandler();
+                    }
+
+                    if (builder.PrimaryHandler is  HttpClientHandler handler)
                     {
                         var certificateSerialNo = builder.Name.RemovePreFix(WeChatPayClient.Prefix);
                         if (_clientCertificateManager.TryGetValue(certificateSerialNo, out var clientCertificate))

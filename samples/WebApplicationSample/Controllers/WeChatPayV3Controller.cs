@@ -16,9 +16,9 @@ namespace WebApplicationSample.Controllers
     {
         private readonly ILogger<WeChatPayV3Controller> _logger;
         private readonly IWeChatPayClient _client;
-        private readonly IOptions<WeChatPayOptions> _optionsAccessor;
+        private readonly IOptions<PaylinkOptions> _optionsAccessor;
 
-        public WeChatPayV3Controller(ILogger<WeChatPayV3Controller> logger, IWeChatPayClient client, IOptions<WeChatPayOptions> optionsAccessor)
+        public WeChatPayV3Controller(ILogger<WeChatPayV3Controller> logger, IWeChatPayClient client, IOptions<PaylinkOptions> optionsAccessor)
         {
             _logger = logger;
             _client = client;
@@ -51,8 +51,8 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsAppBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
-                MchId = _optionsAccessor.Value.MchId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
                 Amount = new Amount { Total = viewModel.Total, Currency = "CNY" },
                 Description = viewModel.Description,
                 NotifyUrl = viewModel.NotifyUrl,
@@ -62,7 +62,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayTransactionsAppRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             if (!response.IsError)
             {
@@ -71,7 +71,7 @@ namespace WebApplicationSample.Controllers
                     PrepayId = response.PrepayId
                 };
 
-                var parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value);
+                var parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value.WeChatPay);
 
                 // 将参数(parameter)给 ios/android端 
                 // https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_2_4.shtml
@@ -102,8 +102,8 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsJsApiBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
-                MchId = _optionsAccessor.Value.MchId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
                 Amount = new Amount { Total = viewModel.Total, Currency = "CNY" },
                 Description = viewModel.Description,
                 NotifyUrl = viewModel.NotifyUrl,
@@ -114,7 +114,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayTransactionsJsApiRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             if (!response.IsError)
             {
@@ -123,7 +123,7 @@ namespace WebApplicationSample.Controllers
                     Package = "prepay_id=" + response.PrepayId
                 };
 
-                var parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value);
+                var parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value.WeChatPay);
 
                 // 将参数(parameter)给 公众号前端
                 // https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_4.shtml
@@ -154,8 +154,8 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsNativeBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
-                MchId = _optionsAccessor.Value.MchId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
                 Amount = new Amount { Total = viewModel.Total, Currency = "CNY" },
                 Description = viewModel.Description,
                 NotifyUrl = viewModel.NotifyUrl,
@@ -165,7 +165,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayTransactionsNativeRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             if (!response.IsError)
             {
                 // response.CodeUrl 给前端生成二维码
@@ -194,8 +194,8 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsH5BodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
-                MchId = _optionsAccessor.Value.MchId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
                 Amount = new Amount { Total = viewModel.Total, Currency = "CNY" },
                 Description = viewModel.Description,
                 NotifyUrl = viewModel.NotifyUrl,
@@ -206,7 +206,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayTransactionsH5Request();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             // h5_url为拉起微信支付收银台的中间页面，可通过访问该url来拉起微信客户端，完成支付,h5_url的有效期为5分钟。
             // https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_3_4.shtml
@@ -232,8 +232,8 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsJsApiBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
-                MchId = _optionsAccessor.Value.MchId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
                 Amount = new Amount { Total = viewModel.Total, Currency = "CNY" },
                 Description = viewModel.Description,
                 NotifyUrl = viewModel.NotifyUrl,
@@ -244,7 +244,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayTransactionsJsApiRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             if (!response.IsError)
             {
@@ -253,7 +253,7 @@ namespace WebApplicationSample.Controllers
                     Package = "prepay_id=" + response.PrepayId
                 };
 
-                var parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value);
+                var parameter = await _client.ExecuteAsync(req, _optionsAccessor.Value.WeChatPay);
 
                 // 将参数(parameter)给 小程序端
                 // https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_5_4.shtml
@@ -284,7 +284,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsIdQueryModel
             {
-                MchId = _optionsAccessor.Value.MchId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
             };
 
             var request = new WeChatPayTransactionsIdRequest
@@ -294,7 +294,7 @@ namespace WebApplicationSample.Controllers
 
             request.SetQueryModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -318,7 +318,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsOutTradeNoQueryModel
             {
-                MchId = _optionsAccessor.Value.MchId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
             };
 
             var request = new WeChatPayTransactionsOutTradeNoRequest
@@ -328,7 +328,7 @@ namespace WebApplicationSample.Controllers
 
             request.SetQueryModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -352,7 +352,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayTransactionsOutTradeNoCloseBodyModel
             {
-                MchId = _optionsAccessor.Value.MchId,
+                MchId = _optionsAccessor.Value.WeChatPay.MchId,
             };
 
             var request = new WeChatPayTransactionsOutTradeNoCloseRequest
@@ -362,7 +362,7 @@ namespace WebApplicationSample.Controllers
 
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -393,7 +393,7 @@ namespace WebApplicationSample.Controllers
 
             request.SetQueryModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -423,7 +423,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayBillFundflowBillRequest();
             request.SetQueryModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -448,7 +448,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayBillDownloadRequest();
             request.SetRequestUrl(viewModel.DownloadUrl);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -482,7 +482,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayRefundDomesticRefundsRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -509,7 +509,7 @@ namespace WebApplicationSample.Controllers
                 OutRefundNo = viewModel.OutRefundNo
             };
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
 
             ViewData["response"] = response.Body;
             return View();
@@ -533,7 +533,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 OutOrderNo = viewModel.OutOrderNo,
                 ServiceIntroduction = viewModel.ServiceIntroduction,
@@ -554,7 +554,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayScoreServiceOrderRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -575,7 +575,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderQueryModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 OutOrderNo = viewModel.OutOrderNo,
                 QueryId = viewModel.QueryId
@@ -584,7 +584,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayScoreServiceOrderQueryRequest();
             request.SetQueryModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -605,7 +605,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderOutOrderNoCancelBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 Reason = viewModel.Reason
             };
@@ -616,7 +616,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -637,7 +637,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderOutOrderNoModifyBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 PostPayments = new List<PostPayment> {
                    new PostPayment{
@@ -656,7 +656,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -677,7 +677,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderOutOrderNoCompleteBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 PostPayments = new List<PostPayment>
                 {
@@ -697,7 +697,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -718,7 +718,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderPayBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
             };
 
@@ -728,7 +728,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -749,7 +749,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderSyncBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 Type = viewModel.Type,
                 Detail = new SyncDetail
@@ -764,7 +764,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -785,7 +785,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScoreServiceOrderDirectCompleteBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 OutOrderNo = viewModel.OutOrderNo,
                 ServiceIntroduction = viewModel.ServiceIntroduction,
@@ -810,7 +810,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayScoreServiceOrderDirectCompleteRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -831,7 +831,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScorePermissionsBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 AuthorizationCode = viewModel.AuthorizationCode,
                 NotifyUrl = viewModel.NotifyUrl
@@ -840,7 +840,7 @@ namespace WebApplicationSample.Controllers
             var request = new WeChatPayScorePermissionsRequest();
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -870,7 +870,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetQueryModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -901,7 +901,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -922,7 +922,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScorePermissionsQueryForOpenIdQueryModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
             };
 
@@ -932,7 +932,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetQueryModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
@@ -953,7 +953,7 @@ namespace WebApplicationSample.Controllers
         {
             var model = new WeChatPayScorePermissionsTerminateForOpenIdBodyModel
             {
-                AppId = _optionsAccessor.Value.AppId,
+                AppId = _optionsAccessor.Value.WeChatPay.AppId,
                 ServiceId = viewModel.ServiceId,
                 Reason = viewModel.Reason
             };
@@ -964,7 +964,7 @@ namespace WebApplicationSample.Controllers
             };
             request.SetBodyModel(model);
 
-            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value);
+            var response = await _client.ExecuteAsync(request, _optionsAccessor.Value.WeChatPay);
             ViewData["response"] = response.Body;
             return View();
         }
