@@ -4,6 +4,8 @@
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+    <PackageId>Essensoft.Paylinks.Alipay.Mvc</PackageId>
+    <PackageTags>Essensoft;Paylinks;Alipay;支付宝</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
