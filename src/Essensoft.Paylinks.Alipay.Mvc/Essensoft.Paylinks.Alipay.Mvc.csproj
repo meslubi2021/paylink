@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Essensoft.Paylinks.Alipay.Client\Essensoft.Paylinks.Alipay.Client.csproj" />
+		<ProjectReference Include="..\Essensoft.Paylinks.Alipay.Core\Essensoft.Paylinks.Alipay.Core.csproj" />
 	</ItemGroup>
 
 </Project>
