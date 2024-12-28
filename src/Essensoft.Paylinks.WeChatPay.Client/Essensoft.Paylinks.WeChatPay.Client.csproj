@@ -13,7 +13,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Essensoft.Paylinks.Security\Essensoft.Paylinks.Security.csproj" />
 		<ProjectReference Include="..\Essensoft.Paylinks.WeChatPay.Core\Essensoft.Paylinks.WeChatPay.Core.csproj" />
 	</ItemGroup>
 

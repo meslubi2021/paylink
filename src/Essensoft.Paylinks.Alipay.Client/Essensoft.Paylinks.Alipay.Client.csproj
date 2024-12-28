@@ -14,7 +14,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Essensoft.Paylinks.Alipay.Core\Essensoft.Paylinks.Alipay.Core.csproj" />
-		<ProjectReference Include="..\Essensoft.Paylinks.Security\Essensoft.Paylinks.Security.csproj" />
 	</ItemGroup>
 
 </Project>
