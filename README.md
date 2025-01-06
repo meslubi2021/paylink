@@ -21,6 +21,51 @@
 - [.NET 8.0](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [.NET 9.0](https://dotnet.microsoft.com/download/dotnet/9.0)
 
+### 示例配置选项
+
+```json
+  "Paylinks": {
+    "Alipay": {
+      // 网关地址
+      "ServerUrl": "https://openapi.alipay.com",
+      // 应用Id
+      "AppId": "",
+      // 应用私钥
+      "AppPrivateKey": "",
+      // 应用证书序列号
+      "AppCertSN": "",
+      // 支付宝公钥
+      "AlipayPublicKey": "",
+      // 支付宝证书序列号
+      "AlipayCertSN": "",
+      // 支付宝根证书序列号
+      "AlipayRootCertSN": "",
+      // 敏感信息对称加密算法类型，推荐：AES
+      "EncryptType": "",
+      // 敏感信息对称加密算法密钥
+      "EncryptKey": ""
+    },
+    "WeChatPay": {
+      // 网关地址
+      "ServerUrl": "https://api.mch.weixin.qq.com",
+      // 应用Id
+      "AppId": "",
+      // 商户号
+      "MchId": "",
+      // 商户证书序列号
+      "MchSerialNo": "",
+      // 商户证书私钥
+      "MchPrivateKey": "",
+      // 微信支付公钥
+      "WeChatPayPublicKey": "",
+      // 微信支付公钥Id(公钥序列号)
+      "WeChatPayPublicKeyId": "",
+      // 商户APIv3密钥
+      "APIv3Key": ""
+    }
+  }
+```
+
 ### 原 Paylink
 
 - [V4](../../tree/v4)
