@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+    <PackageId>Essensoft.Paylinks.WeChatPay.Core</PackageId>
+    <PackageTags>Essensoft;Paylinks;WeChatPay;微信支付</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Essensoft.Paylinks.Security\Essensoft.Paylinks.Security.csproj" />
+	</ItemGroup>
+
+</Project>

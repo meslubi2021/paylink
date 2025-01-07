@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+    <PackageId>Essensoft.Paylinks.Security</PackageId>
+    <PackageTags>Essensoft;Paylinks;Security</PackageTags>
+	</PropertyGroup>
+
+</Project>
